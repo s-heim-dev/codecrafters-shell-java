@@ -1,4 +1,4 @@
-[![progress-banner](https://backend.codecrafters.io/progress/shell/f8b2571f-de6b-4622-bbe9-edca1b935fd9)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/shell/f8b2571f-de6b-4622-bbe9-edca1b935fd9)](https://app.codecrafters.io/users/s-heim-dev)
 
 This is a simple shell in Java based on the
 ["Build Your Own Shell" Challenge](https://app.codecrafters.io/courses/shell/overview) by [codecrafters.io](https://codecrafters.io).
