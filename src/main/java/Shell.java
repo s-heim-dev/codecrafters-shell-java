@@ -11,6 +11,7 @@ public class Shell {
     String[] args;
     String[] paths;
     String pwd;
+    String home;
     Builtin buildinCommand;
 
     private enum Builtin {
@@ -25,6 +26,7 @@ public class Shell {
         this.command = "";
         this.args = new String[0];
         this.paths = System.getenv("PATH").split(":");
+        this.home = System.getenv("HOME");
         this.pwd = Path.of("").toAbsolutePath().toString();
     }
 
@@ -148,7 +150,7 @@ public class Shell {
     private boolean handleCD() {
         if (this.args.length < 2) return true;
 
-        String path = this.args[1];
+        String path = this.args[1].replace("~", this.home);
 
         if (!path.startsWith("/")) {
             path = this.changeRelativePath(this.pwd, path);
