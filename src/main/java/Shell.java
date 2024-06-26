@@ -10,7 +10,7 @@ public class Shell {
     String command;
     String[] args;
     String[] paths;
-    Path pwd;
+    String pwd;
     Builtin buildinCommand;
 
     private enum Builtin {
@@ -25,7 +25,7 @@ public class Shell {
         this.command = "";
         this.args = new String[0];
         this.paths = System.getenv("PATH").split(":");
-        this.pwd = Path.of("").toAbsolutePath();
+        this.pwd = Path.of("").toAbsolutePath().toString();
     }
 
     public boolean handle(String[] args) {
@@ -61,6 +61,11 @@ public class Shell {
             if (f.exists() && !f.isDirectory()) {
                 return path;
             }
+        }
+
+        File f = new File(this.pwd + "/" + command);
+        if (f.exists() && !f.isDirectory()) {
+            return this.pwd;
         }
 
         return null;
@@ -111,7 +116,9 @@ public class Shell {
         Process process;
 
         try {
-            process = new ProcessBuilder(this.args).start();
+            ProcessBuilder processBuilder = new ProcessBuilder(this.args);
+            processBuilder.directory(new File(this.pwd));
+            process = processBuilder.start();
         } catch (IOException e) {
             e.printStackTrace();
             return true;
@@ -141,14 +148,47 @@ public class Shell {
     private boolean handleCD() {
         if (this.args.length < 2) return true;
 
-        File f = new File(this.args[1]);
+        String path = this.args[1];
+
+        if (!path.startsWith("/")) {
+            path = this.changeRelativePath(this.pwd, path);
+        }
+
+        File f = new File(path);
 
         if (!f.exists()) {
             System.out.printf("cd: %s: No such file or directory\n", this.args[1]);
             return true;
         }
 
-        this.pwd = Path.of(this.args[1]);
+        this.pwd = path;
         return true;
+    }
+
+    private String changeRelativePath(String pwd, String path) {
+        if (path.startsWith("./")) {
+            return pwd + path.substring(1);
+        }
+
+        String[] currentPath = pwd.split("/");
+        String[] relativePath = path.split("/");
+
+        int i = currentPath.length, j = 0;
+        while (j < relativePath.length && relativePath[j].equals("..")) {
+            i--;
+            j++;
+        }
+
+        currentPath = Arrays.copyOfRange(currentPath, 0, i);
+        relativePath = Arrays.copyOfRange(relativePath, j, relativePath.length);
+
+        path = "/" + String.join("/", currentPath) + "/" + String.join("/", relativePath);
+        path = path.replaceAll("//", "/");
+
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        return path;
     }
 }
