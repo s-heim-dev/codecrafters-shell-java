@@ -10,9 +10,11 @@ public class Shell {
     String command;
     String[] args;
     String[] paths;
+    Path pwd;
     Builtin buildinCommand;
 
     private enum Builtin {
+        cd,
         echo,
         exit,
         pwd,
@@ -23,19 +25,19 @@ public class Shell {
         this.command = "";
         this.args = new String[0];
         this.paths = System.getenv("PATH").split(":");
+        this.pwd = Path.of("").toAbsolutePath();
     }
 
-    public Shell(String[] args) {
-        this();
+    public boolean handle(String[] args) {
+        this.args = args;
 
         if (args.length > 0) {
             this.command = args[0];
-            this.args = args;
         }
-    }
+        else {
+            this.command = "";
+        }
 
-
-    public boolean handle() {
         switch(this.command) {
             case "exit":
                 return this.handleExit();
@@ -45,6 +47,8 @@ public class Shell {
                 return this.handleType();
             case "pwd":
                 return this.handlePwd();
+            case "cd":
+                return this.handleCD();
             default:
                 return this.execute();
         }
@@ -130,8 +134,21 @@ public class Shell {
     }
 
     private boolean handlePwd() {
-        Path workingDir = Path.of("").toAbsolutePath();
-        System.out.println(workingDir);
+        System.out.println(this.pwd);
+        return true;
+    }
+
+    private boolean handleCD() {
+        if (this.args.length < 2) return true;
+
+        File f = new File(this.args[1]);
+
+        if (!f.exists()) {
+            System.out.printf("cd: %s: No such file or directory\n", this.args[1]);
+            return true;
+        }
+
+        this.pwd = Path.of(this.args[1]);
         return true;
     }
 }

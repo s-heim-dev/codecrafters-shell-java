@@ -6,13 +6,12 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         String input;
-        Shell shell;
+        Shell shell = new Shell();
         do {
             System.out.print("$ ");
             input = scanner.nextLine();
-            shell = new Shell(input.split(" "));
         }
-        while(shell.handle());
+        while(shell.handle(input.split(" ")));
 
         scanner.close();
         System.exit(0);
