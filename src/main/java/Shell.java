@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class Shell {
@@ -14,6 +15,7 @@ public class Shell {
     private enum Builtin {
         echo,
         exit,
+        pwd,
         type
     }
 
@@ -41,6 +43,8 @@ public class Shell {
                 return this.handleEcho();
             case "type":
                 return this.handleType();
+            case "pwd":
+                return this.handlePwd();
             default:
                 return this.execute();
         }
@@ -122,6 +126,12 @@ public class Shell {
             e.printStackTrace();
         }
 
+        return true;
+    }
+
+    private boolean handlePwd() {
+        Path workingDir = Path.of("").toAbsolutePath();
+        System.out.println(workingDir);
         return true;
     }
 }
