@@ -63,7 +63,18 @@ public class Shell {
         for (int i = 0; i < input.length(); i++) {
             char current = input.charAt(i);
 
-            if (current == '\'' && !insideDoubleQuote) {
+            if (current == '\\' && !insideSingleQuote) {
+                char next = input.charAt(i+1);
+                if (!insideDoubleQuote || (next == '\\' || next == '$' || next == '"')) {
+                    arg.append(next);
+                    i++;
+                }
+                else {
+                    arg.append(current);
+                }
+
+            }
+            else if (current == '\'' && !insideDoubleQuote) {
                 insideSingleQuote = !insideSingleQuote;
             }
             else if (current == '\"' && !insideSingleQuote) {
@@ -75,15 +86,12 @@ public class Shell {
                     arg = new StringBuilder();
                 }
             }
-            else if (current == '\\' && !insideSingleQuote && !insideDoubleQuote) {
-                arg.append(input.charAt(++i));
-            }
             else {
                 arg.append(current);
             }
         }
 
-        if (!insideSingleQuote && !insideDoubleQuote && arg.length() > 0) {
+        if (arg.length() > 0) {
             arguments.add(arg.toString());
         }
 
