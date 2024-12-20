@@ -30,11 +30,11 @@ public class Shell {
         this.pwd = Path.of("").toAbsolutePath().toString();
     }
 
-    public boolean handle(String[] args) {
-        this.args = args;
+    public boolean handle(String args) {
+        this.args = this.handleArgs(args);
 
-        if (args.length > 0) {
-            this.command = args[0];
+        if (this.args.length > 0) {
+            this.command = this.args[0];
         }
         else {
             this.command = "";
@@ -54,6 +54,22 @@ public class Shell {
             default:
                 return this.execute();
         }
+    }
+
+    private String[] handleArgs(String args) {
+        if (args.contains("\'")) {
+            String[] args2 = args.split("\'");
+            args2[0] = args2[0].replaceAll(" ", "");
+            return args2;
+        }
+
+        String[] args2 = args.split(" ", 2);
+
+        if (args2.length > 1) {
+            args2[1] = args2[1].trim().replaceAll(" +", " ");
+        }
+
+        return args2;
     }
 
     private String findPath(String command) {

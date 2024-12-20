@@ -11,7 +11,7 @@ public class Main {
             System.out.print("$ ");
             input = scanner.nextLine();
         }
-        while(shell.handle(input.split(" ")));
+        while(shell.handle(input));
 
         scanner.close();
         System.exit(0);
