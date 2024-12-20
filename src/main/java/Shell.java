@@ -1,10 +1,6 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.*;
 
 public class Shell {
     String command;
@@ -56,20 +52,39 @@ public class Shell {
         }
     }
 
-    private String[] handleArgs(String args) {
-        if (args.contains("\'")) {
-            String[] args2 = args.split("\'");
-            args2[0] = args2[0].replaceAll(" ", "");
-            return args2;
+    private String[] handleArgs(String input) {
+        List<String> arguments = new ArrayList<>();
+
+        boolean insideSingleQuote = false;
+        boolean insideDoubleQuote = false;
+
+        StringBuilder arg = new StringBuilder();
+
+        for (int i = 0, j = -1; i < input.length(); i++) {
+            char current = input.charAt(i);
+
+            if (current == '\'' && !insideDoubleQuote) {
+                insideSingleQuote = !insideSingleQuote;
+            }
+            else if (current == '\"' && !insideSingleQuote) {
+                insideDoubleQuote = !insideDoubleQuote;
+            }
+            else if (current == ' ' && !insideSingleQuote && !insideDoubleQuote) {
+                if (arg.length() > 0) {
+                    arguments.add(arg.toString());
+                    arg = new StringBuilder();
+                }
+            }
+            else {
+                arg.append(current);
+            }
         }
 
-        String[] args2 = args.split(" ", 2);
-
-        if (args2.length > 1) {
-            args2[1] = args2[1].trim().replaceAll(" +", " ");
+        if (!insideSingleQuote && !insideDoubleQuote && arg.length() > 0) {
+            arguments.add(arg.toString());
         }
 
-        return args2;
+        return arguments.toArray(String[]::new);
     }
 
     private String findPath(String command) {
